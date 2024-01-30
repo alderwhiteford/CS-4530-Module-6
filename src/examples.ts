@@ -77,30 +77,24 @@ export async function importGrades(gradesToImport: ImportTranscript[]): Promise<
     const { studentID } = await client.addStudent(studentName);
     console.log(`Added student ${studentID}`)
 
-    const importStudentGrades = grades.map(async (studentGrade) => {
-      const { course, grade } = studentGrade
-
-      console.log(`Adding grade for student ${studentID}`)
+    for(let j = 0 ; j < grades.length ; j++) {
+      const { course, grade } = grades[j]
+      // Add their grade:
+      console.log(`Adding grade for ${studentID}`)
       await client.addGrade(studentID, course, grade)
-    })
-
-    await Promise.all(importStudentGrades)
+    }
 
     return studentID
   })
 
   const studentIDs = await Promise.all(importStudentTranscript)
 
-  const fetchStudentTranscripts = studentIDs.map(async (id) => {
+  await Promise.all(studentIDs.map(async (id) => {
     ret.push(await client.getTranscript(id));
-  });
-
-  await Promise.all(fetchStudentTranscripts)
+  }));
 
   return ret
 }
-
-
 
 importGrades([
   {
